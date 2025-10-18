@@ -1,4 +1,4 @@
-export default function Home() {
+export default function Login() {
   return (
     <div className="flex items-center justify-center h-screen">
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
