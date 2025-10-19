@@ -1,54 +1,43 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"os"
 
-	"hackumass-xiii.com/judging-platform/middleware"
+	"hackumass-xiii.com/judging-platform/router"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/v2/mongo/options"
-	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
 func setupRouter(mongodb_url string) *gin.Engine {
 	// Initialize engine
 	r := gin.Default()
 
-	// Initialize MongoDB
-	// Use the SetServerAPIOptions() method to set the version of the Stable API on the client
-	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(mongodb_url).SetServerAPIOptions(serverAPI)
+	// Allow CORS
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") // frontend origin
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 
-	client, err := mongo.Connect(opts)
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
 		}
-	}()
 
-	// Send a ping to confirm a successful connection
-	if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
-	}
-	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
+		c.Next()
+	})
+
+	// Initialize database
+	router.InitMongoDB(mongodb_url)
 
 	// Set up router
 	api := r.Group("/api")
 	{
-		/*
-			api.POST("/login", handlers.Login)
-			api.POST("/signup", handlers.Signup)
-		*/
-		api.GET("/ping", middleware.Ping)
+		api.POST("/login", router.Login)
+		api.POST("/signup", router.Signup)
+		api.GET("/verify", router.Verify)
 	}
 
 	// Return
@@ -67,6 +56,7 @@ func main() {
 
 	// Set up router
 	r := setupRouter(mongodb_url)
+
 	// Listen and Server in 0.0.0.0:8080
 	r.Run(":" + backend_port)
 }

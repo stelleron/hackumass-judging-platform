@@ -5,7 +5,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
-    const res = await fetch("http://localhost:8000/api/login", {
+    const res = await fetch("http://localhost:8000/api/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", // important for cookies
