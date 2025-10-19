@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 export default function Login() {
   return (
     <div className="flex items-center justify-center h-screen">
@@ -12,7 +14,7 @@ export default function Login() {
         <label className="label">Password</label>
         <input type="password" className="input" placeholder="Password"/>
 
-        <div className="">Don&apos;t have an account? <a href="/signup" className="text-blue-300">Sign Up</a></div>
+        <div className="">Don&apos;t have an account? <Link href="/signup" className="text-blue-300">Sign Up</Link></div>
 
         <button className="btn btn-neutral">Login</button>
       </fieldset>
