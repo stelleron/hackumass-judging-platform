@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [signInError, setSignInError] = useState(false);
 
   const handleSignup = async () => {
     const res = await fetch("http://localhost:8000/api/signup", {
@@ -12,8 +13,11 @@ export default function Signup() {
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await res.json();
-    alert(data.message);
+    if (res.ok) {
+      setSignInError(false)
+		} else {
+      setSignInError(true)
+		}
   };
 
 
@@ -39,6 +43,9 @@ export default function Signup() {
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
+
+
+            {signInError ? <div className="text-red-700 font-bold">Error: Unable to sign up!</div> : <></>}
 
             <button onClick={handleSignup} className="btn btn-neutral">Sign Up</button>
         </fieldset>

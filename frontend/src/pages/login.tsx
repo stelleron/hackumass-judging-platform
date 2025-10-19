@@ -4,6 +4,7 @@ import { useState } from "react";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [signInError, setSignInError] = useState(false);
 
   const handleLogin = async () => {
     const res = await fetch("http://localhost:8000/api/login", {
@@ -13,8 +14,11 @@ export default function Login() {
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await res.json();
-    alert(data.message);
+    if (res.ok) {
+      setSignInError(false)
+		} else {
+      setSignInError(true)
+		}
   };
 
 
@@ -44,6 +48,8 @@ export default function Login() {
         />
 
         <div className="">Don&apos;t have an account? <Link href="/signup" className="text-blue-300">Sign Up</Link></div>
+
+        {signInError ? <div className="text-red-700 font-bold">Error: Unable to log in!</div> : <></>}
 
         <button onClick={handleLogin} className="btn btn-neutral">Login</button>
       </fieldset>
