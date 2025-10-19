@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
+
+	"hackumass-xiii.com/judging-platform/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -41,9 +42,14 @@ func setupRouter(mongodb_url string) *gin.Engine {
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
 	// Set up router
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
+	api := r.Group("/api")
+	{
+		/*
+			api.POST("/login", handlers.Login)
+			api.POST("/signup", handlers.Signup)
+		*/
+		api.GET("/ping", middleware.Ping)
+	}
 
 	// Return
 	return r
