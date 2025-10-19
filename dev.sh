@@ -1,12 +1,31 @@
 #!/bin/bash
 set -e
 
-# Start frontend in background
-sh frontend.sh &
+cleanup() {
+    echo -e "\n🛑 Stopping dev servers..."
+
+    kill "$FRONTEND_PID" 2>/dev/null || true
+    kill "$BACKEND_PID" 2>/dev/null || true
+
+    exit 0
+}
+trap cleanup SIGINT SIGTERM
+
+echo "⚡️ Starting frontend..."
+cd frontend
+npm install
+npm run dev &
 FRONTEND_PID=$!
+cd ..
 
-# Start backend
-sh backend.sh
+echo "🖥️ Starting backend..."
+cd backend
+go run . &
+BACKEND_PID=$!
+cd ..
 
-# Optional: wait for frontend to exit if backend terminates
+while ! curl -s http://localhost:8000 > /dev/null 2>&1; do
+    sleep 1
+done
+
 wait $FRONTEND_PID $BACKEND_PID
