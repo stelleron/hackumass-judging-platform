@@ -18,13 +18,9 @@ func HashPassword(password string) string {
 
 // Verify the given password with the stored one
 func VerifyPassword(userPassword string, providedPassword string) (bool, string) {
-	err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
-	check := true
-	msg := ""
-
+	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(providedPassword))
 	if err != nil {
-		check = false
+		return false, "invalid credentials"
 	}
-
-	return check, msg
+	return true, ""
 }
